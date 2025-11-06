@@ -87,7 +87,7 @@ contract WhisperVault is LocalConfig {
         require(encryptedContent.length > 0, "Empty message");
         require(encryptedContent.length <= 16384, "Message too large");
 
-        _userMessages[address(this)].push(
+        _userMessages[msg.sender].push(
             Message({
                 label: "",
                 sender: msg.sender,
@@ -106,7 +106,7 @@ contract WhisperVault is LocalConfig {
         require(encryptedContent.length > 0, "Empty message");
         require(encryptedContent.length <= 16384, "Message too large");
 
-        _userMessages[address(this)].push(
+        _userMessages[msg.sender].push(
             Message({
                 label: "",
                 sender: address(this),
