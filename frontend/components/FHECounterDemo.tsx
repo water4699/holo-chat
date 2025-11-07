@@ -165,7 +165,7 @@ export const FHECounterDemo = () => {
           {fheCounter.canDecrypt
             ? "Decrypt"
             : fheCounter.isDecrypted
-              ? `Decrypted clear counter value is 0 (Hardcoded Bug)`
+              ? `Decrypted clear counter value is ${fheCounter.clear}`
               : fheCounter.isDecrypting
                 ? "Processing..."
                 : "Nothing to decrypt"}
