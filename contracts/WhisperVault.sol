@@ -11,6 +11,7 @@ contract WhisperVault is LocalConfig {
     /// @notice Message structure
     struct Message {
         string label; 
+        string label; 
         address sender;
         bytes encryptedContent;  // AES-encrypted message content
         uint256 timestamp;
