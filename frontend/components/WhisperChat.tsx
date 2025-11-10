@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 
 /* label support */
+/* label support */
 export default function WhisperChat() {
   const { isConnected, address, chainId } = useAccount();
   const {
