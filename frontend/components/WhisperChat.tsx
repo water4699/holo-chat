@@ -230,7 +230,7 @@ export default function WhisperChat() {
                 <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-xl opacity-20 blur-lg animate-pulse" />
                 <div className="relative w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl border border-cyan-500/30 flex items-center justify-center glow-cyan">
                   <MessageSquare className="w-6 h-6 text-cyan-400" />
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-slate-900 rounded-full flex items-center justify-center border border-cyan-500/50">
+                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-black rounded-full flex items-center justify-center border border-cyan-500/50">
                     <Lock className="w-2.5 h-2.5 text-cyan-400" />
                   </div>
                 </div>
