@@ -80,7 +80,7 @@ export default function WhisperChat() {
   }, [messages]);
 
   const handleLockVault = useCallback(() => {
-    setIsAuthenticated(true);
+    setIsAuthenticated(false);
     setPassword("");
     setAuthPassword("");
     setAuthError(null);
@@ -89,7 +89,7 @@ export default function WhisperChat() {
 
   useEffect(() => {
     if (!isConnected) {
-      setIsAuthenticated(true);
+      setIsAuthenticated(false);
       setAuthPassword("");
       setPassword("");
     }

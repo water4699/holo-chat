@@ -46,7 +46,7 @@ const WHISPER_VAULT_ABI = [
   "function getMessageMetadata(address user, uint256 index) view returns (address sender, uint256 timestamp, bool isResponse)",
   "function getEncryptedContent(address user, uint256 index) view returns (bytes)",
   "function getMessage(address user, uint256 index) view returns (address sender, bytes encryptedContent, uint256 timestamp, bool isResponse)",
-  "function getAllMessages(address user) view returns (tuple(address sender, bytes encryptedContent, uint256 timestamp, bool isResponse)[])",
+  "function getAllMessages(address user) view returns (tuple(string label, address sender, bytes encryptedContent, uint256 timestamp, bool isResponse)[])",
   "function storeMessage(bytes encryptedContent) external",
   "function storeResponse(bytes encryptedContent) external",
   "function clearMessages() external",
@@ -146,7 +146,7 @@ export function useWhisperVault() {
 
       // Use batch loading for better performance
       const allMessages = await contract.getAllMessages(address);
-      const loadedMessages: Message[] = allMessages.map((msg: { sender: string; encryptedContent: string; timestamp: bigint; isResponse: boolean }, index: number) => ({
+      const loadedMessages: Message[] = allMessages.map((msg: { label: string; sender: string; encryptedContent: string; timestamp: bigint; isResponse: boolean }, index: number) => ({
         id: index,
         sender: msg.sender,
         encryptedContent: msg.encryptedContent as string,
@@ -251,17 +251,21 @@ export function useWhisperVault() {
     [address, messages, getContract, loadMessages]
   );
 
-  // Decrypt all messages - requires on-chain verification first
+  // Decrypt all messages - on-chain verification is optional
   const decryptAllMessages = useCallback(
     async (password: string) => {
       try {
         setLoading(true);
         setError(null);
 
-        // Step 1: Send on-chain decryption request (triggers MetaMask)
+        if (messages.length === 0) {
+          throw new Error("No messages to decrypt");
+        }
+
+        // Step 1: Try to send on-chain decryption request (optional - for audit trail)
         const contract = await getContract();
-        if (contract && messages.length > 0) {
-          console.log("[Decrypt] Sending on-chain decryption request...");
+        if (contract) {
+          console.log("[Decrypt] Attempting on-chain decryption request (optional)...");
           
           try {
             // Call requestDecryption - this is a write function that triggers MetaMask
@@ -270,17 +274,16 @@ export function useWhisperVault() {
             await tx.wait();
             console.log("[Decrypt] Decryption request confirmed on-chain");
           } catch (contractErr) {
-            console.error("[Decrypt] On-chain request failed:", contractErr);
-            throw new Error("Decryption request rejected or failed");
+            // On-chain verification failed, but continue with local decryption
+            console.warn("[Decrypt] On-chain request failed, continuing with local decryption:", contractErr);
+            // Don't throw error - local decryption can still proceed
           }
-        } else if (messages.length === 0) {
-          throw new Error("No messages to decrypt");
         } else {
-          console.log("[Decrypt] No contract available, using demo mode");
+          console.log("[Decrypt] No contract available, using local decryption only");
         }
 
-        // Step 2: After on-chain confirmation, decrypt locally
-        console.log("[Decrypt] On-chain verification complete, proceeding with local decryption...");
+        // Step 2: Decrypt locally (works independently of on-chain verification)
+        console.log("[Decrypt] Proceeding with local decryption...");
         
         const decryptedMessages = await Promise.all(
           messages.map(async (msg: Message) => {
